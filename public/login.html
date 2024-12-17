@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign Up / Login</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+    />
+    <style>
+      body {
+        background-color: #fff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        font-family: 'Poppins', sans-serif;
+      }
+      .form-card {
+        border-radius: 50px;
+        width: 350px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        background: #f9f9f9;
+        text-align: center;
+        padding: 20px;
+      }
+      .btn-box {
+        width: 220px;
+        margin: 20px auto;
+        position: relative;
+        border-radius: 30px;
+        display: flex;
+        justify-content: space-between;
+      }
+      .toggle-btn {
+        padding: 10px 30px;
+        cursor: pointer;
+        background: transparent;
+        border: 0;
+        position: relative;
+        z-index: 1;
+        font-weight: bold;
+      }
+      .btn {
+        position: absolute;
+        top: 0;
+        left: 110px; /* Default position for Sign Up */
+        width: 110px;
+        height: 100%;
+        background: linear-gradient(to right, #ff8c00, #000);
+        border-radius: 30px;
+        transition: 0.5s;
+      }
+      .input-container {
+        position: relative;
+        margin: 15px 0;
+      }
+      input {
+        padding: 10px 10px 10px 40px;
+        width: 100%;
+        border-radius: 50px;
+        border: 1px solid #ccc;
+      }
+      .icon {
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 20px;
+        color: #888;
+      }
+      .signin {
+        margin-top: 20px;
+        padding: 10px;
+        width: 100%;
+        border: none;
+        border-radius: 50px;
+        cursor: pointer;
+        background: #ff8c00;
+        color: #fff;
+        font-weight: bold;
+      }
+      label {
+        font-weight: bold;
+        display: block;
+        margin: 10px 0 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="form-card">
+      <div class="btn-box">
+        <div class="btn" id="btn"></div>
+        <button type="button" class="toggle-btn" onclick="showLogin()">Log In</button>
+        <button type="button" class="toggle-btn" onclick="showSignUp()">Sign Up</button>
+      </div>
+      <div id="form-container">
+        <!-- Sign-Up Form -->
+        <div id="signup" class="form-content signup">
+          <label for="signupName">First Name</label>
+          <div class="input-container">
+            <i class="fa-solid fa-user icon"></i>
+            <input type="text" id="signupName" placeholder="Enter your First Name" required />
+          </div>
+          <label for="signupEmail">E-mail</label>
+          <div class="input-container">
+            <i class="fa-solid fa-envelope icon"></i>
+            <input type="email" id="signupEmail" placeholder="Enter your E-mail" required />
+          </div>
+          <label for="signupPassword">Password</label>
+          <div class="input-container">
+            <i class="fa-solid fa-lock icon"></i>
+            <input type="password" id="signupPassword" placeholder="Enter your password" required />
+          </div>
+          <input type="checkbox" id="termsCheckbox" />
+          <span>I agree to the terms & conditions</span>
+          <button type="button" class="signin" onclick="signUpUser()">Sign Up</button>
+        </div>
+
+        <!-- Login Form -->
+        <div id="login" class="form-content login" style="display: none;">
+          <label for="loginName">First Name</label>
+          <div class="input-container">
+            <i class="fa-solid fa-user icon"></i>
+            <input type="text" id="loginName" placeholder="Enter your First Name" />
+          </div>
+          <label for="loginPassword">Password</label>
+          <div class="input-container">
+            <i class="fa-solid fa-lock icon"></i>
+            <input type="password" id="loginPassword" placeholder="Enter your password" />
+          </div>
+          <button type="button" class="signin" onclick="loginUser()">Log In</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const loginForm = document.getElementById("login");
+      const signupForm = document.getElementById("signup");
+      const btn = document.getElementById("btn");
+
+      function showSignUp() {
+        loginForm.style.display = "none";
+        signupForm.style.display = "block";
+        btn.style.left = "110px";
+      }
+
+      function showLogin() {
+        signupForm.style.display = "none";
+        loginForm.style.display = "block";
+        btn.style.left = "0px";
+      }
+
+      async function signUpUser() {
+        const name = document.getElementById("signupName").value;
+        const email = document.getElementById("signupEmail").value;
+        const password = document.getElementById("signupPassword").value;
+
+        // Sign Up API request
+        const response = await fetch("http://localhost:5001/signup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email, password }),
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+          alert(data.message);
+          showLogin();
+        } else {
+          alert(data.message);
+        }
+      }
+
+      async function loginUser() {
+        const name = document.getElementById("loginName").value;
+        const password = document.getElementById("loginPassword").value;
+
+        // Log In API request
+        const response = await fetch("http://localhost:5001/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ firstName: name, password }),
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+          alert(data.message);
+          window.location.href = "DailyCart.html"; // Redirect to the home page
+        } else {
+          alert(data.message);
+        }
+      }
+
+      // Show Sign Up form by default
+      showSignUp();
+    </script>
+  </body>
+</html>
