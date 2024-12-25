@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content = "width=device-width , initial-scale = 1,0">
+  <title></title>
+  <link rel="stylesheet" href="successfull.css">
+</head>
+
+<body>
+  <div class="container">
+    <button class="btn" onclick="openPopup()">Submit</button>
+    <div class="popup" id="popup">
+      <img src="tick (1).png">
+      <h2>Thank You!</h2>
+      <p>Order placed successfully!</p>
+      <button onclick="openHome()">OK</button>
+    </div>
+  </div>
+
+  <script>
+    let popup = document.getElementById("popup")
+    function openPopup()
+    {
+      popup.classList.add("open-popup");
+    }
+
+    function openHome()
+    {
+      window.location="DailyCart.html";
+    }
+  </script>
+
+
+
+
+
+</body>
+</html>
