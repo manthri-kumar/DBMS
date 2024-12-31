@@ -17,8 +17,8 @@
         <ul>
             <li><a>Home</a></li>
             <li><a href="Vegitable.html">Vegetables</a></li>
-            <li><a href="#">Cart</a></li>
-            <li><a href="login.html">Profile</a></li>
+            <li><a href="cart.html">Cart</a></li>
+            <li><a href="profile.html">Profile</a></li>
             <div class="search-box">
                 <input type="text" placeholder="search">
             </div>
@@ -369,6 +369,25 @@
                 console.error("Error:", error);
             });
         });
+        document.addEventListener("DOMContentLoaded", () => {
+            const cartIcon = document.getElementById("cart-icon");
+            const cartQuantity = cartIcon.querySelector(".quantity");
+            const addButtons = document.querySelectorAll(".card .btn button");
+
+            let cartCount = 0;
+
+            addButtons.forEach((button) => {
+                button.addEventListener("click", () => {
+                    // Increment the cart count
+                    cartCount++;
+                    cartQuantity.textContent = cartCount;
+
+                    // Provide feedback to the user
+                    alert("Item added to cart!");
+                });
+            });
+        });
+        
     </script>
     
 
