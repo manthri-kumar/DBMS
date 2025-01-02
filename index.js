@@ -109,9 +109,12 @@ app.post("/login", (req, res) => {
             JWT_SECRET,
             { expiresIn: "1h" }
           );
+
+          // Set the JWT as a cookie
+          res.cookie("auth_token", token);
+
           res.status(200).json({
             message: "Login successful!",
-            token,
             user: { username: user.username, email: user.email },
           });
         } else {
@@ -126,8 +129,9 @@ app.post("/login", (req, res) => {
 
 // Middleware to authenticate JWT token
 const authenticateJWT = (req, res, next) => {
-  const token = req.headers["authorization"]?.split(" ")[1];
-
+  const token = req.headers.cookie.split("=")[1];
+  console.log(req.headers)
+  console.log(token)
   if (!token) {
     return res.status(403).json({ error: true, message: "Access denied" });
   }
@@ -141,6 +145,48 @@ const authenticateJWT = (req, res, next) => {
     next();
   });
 };
+
+app.post("/api/placeorder", authenticateJWT, (req, res) => {
+  const { cart, totalAmount } = req.body;
+
+  if (!cart || !totalAmount || cart.length === 0) {
+    return res.status(400).json({ message: "Invalid order data" });
+  }
+
+  const userId = req.user.id; // Assuming `authenticateJWT` middleware adds `user` to the request
+  const orderId = `ORD-${Date.now()}`; // Generate a unique order ID
+  const orderDate = new Date().toISOString().split("T")[0]; // Today's date
+  const deliveryDate = new Date(
+    Date.now() + 7 * 24 * 60 * 60 * 1000
+  ) // Delivery date: 7 days later
+    .toISOString()
+    .split("T")[0];
+  const itemsJson = JSON.stringify(cart); // Convert cart to JSON string
+
+  const query = `
+    INSERT INTO orders (order_id, order_date, delivery_date, total_payment, items)
+    VALUES (?, ?, ?, ?, ?)
+  `;
+
+  connection.query(
+    query,
+    [orderId, orderDate, deliveryDate, totalAmount, itemsJson],
+    (err) => {
+      if (err) {
+        console.error("Error inserting order:", err);
+        return res.status(500).json({ message: "Failed to place order" });
+      }
+
+      res.status(200).json({
+        message: "Order placed successfully!",
+        orderId,
+      });
+    }
+  );
+});
+
+
+
 app.get("/order.html", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "order.html"));
 });
