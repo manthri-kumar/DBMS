@@ -3,118 +3,220 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile Page</title>
+    <title>Account Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* General Styles */
-        body {
-            font-family: Arial, sans-serif;
+        * {
             margin: 0;
             padding: 0;
-            background-color: #f4f4f9;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
         }
 
-        header {
-            background-color: #6200ea;
+        body {
+            background-color: #f1f3f6;
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            background-color: #ffa333;
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
             color: white;
-            text-align: center;
-            padding: 1rem;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
         }
 
         .container {
-            max-width: 800px;
+            max-width: 1200px;
             margin: 20px auto;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            padding: 20px;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 20px;
         }
 
-        .section {
+        .sidebar {
+            background: white;
+            padding: 20px;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .user-info {
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e0e0e0;
             margin-bottom: 20px;
         }
 
-        .section h2 {
-            font-size: 1.5rem;
+        .user-name {
+            font-size: 18px;
+            font-weight: bold;
             margin-bottom: 10px;
-            color: #333;
         }
 
-        .section p {
-            margin: 10px 0;
-            color: #555;
-        }
-
-        .button-group {
+        .menu-items a {
             display: flex;
-            justify-content: space-around;
-            margin-top: 20px;
-        }
-
-        .button-group a {
+            align-items: center;
+            gap: 10px;
+            padding: 10px 0;
+            color: #333;
             text-decoration: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            color: white;
-            background-color: #6200ea;
-            transition: background-color 0.3s;
+            font-size: 14px;
         }
 
-        .button-group a:hover {
-            background-color: #3700b3;
+        .menu-items a:hover {
+            color: #2874f0;
         }
 
-        footer {
+        .main-content {
+            display: grid;
+            gap: 20px;
+        }
+
+        .stat-card, .card {
+            background: white;
+            padding: 20px;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .stat-card i {
+            font-size: 24px;
+            color: #2874f0;
+        }
+
+        .stat-card {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .profile-card {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
             text-align: center;
-            padding: 10px;
-            background-color: #6200ea;
-            color: white;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
+        }
+
+        .profile-detail {
+            margin: 10px 0;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .logout-btn {
+            background-color: #ff8c00;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-    <header>
-        <h1>Welcome, [User Name]</h1>
-    </header>
 
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-content">
+            <div class="logo">MyAccount</div>
+            <div class="nav-links">
+                <a href="DialyCart.html">Home</a>
+                <a href="vegitable.html">Vegetables</a>
+                <a href="#">Profile</a>
+                <a href="#">Cart</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
     <div class="container">
-        <!-- User Info Section -->
-        <div class="section">
-            <h2>Profile Information</h2>
-            <p><strong>User Name:</strong> John Doe</p>
-            <p><strong>Email:</strong> john.doe@example.com</p>
-        </div>
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="user-info">
+                <div class="user-name">
+                    Hey! <span id="username">Guest</span>
+                </div>
+                <button id="logoutButton" class="logout-btn" style="background-color: #d9534f; color: white; padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer;">Logout</button>
+            </div>
 
-        <!-- Cart Section -->
-        <div class="section">
-            <h2>Cart</h2>
-            <p>You have 3 items in your cart.</p>
-            <div class="button-group">
-                <a href="#">View Cart</a>
+            <div class="menu-items">
+                <a href="checkout.html"><i class="fas fa-box"></i> Orders</a>
+                <a href="#"><i class="fas fa-user"></i> Profile Info</a>
+                <a href="#"><i class="fas fa-credit-card"></i> Payment Methods</a>
             </div>
         </div>
 
-        <!-- Orders Section -->
-        <div class="section">
-            <h2>Orders</h2>
-            <p>Track your orders here.</p>
-            <div class="button-group">
-                <a href="#">View Orders</a>
-            </div>
-        </div>
+        <!-- Profile Card and Main Content -->
+        <div class="main-content">
+            <!-- Profile Card -->
+        
 
-        <!-- Logout Button -->
-        <div class="section">
-            <div class="button-group">
-                <a href="#">Logout</a>
+            <!-- Quick Stats -->
+            <div class="stat-card">
+                <i class="fas fa-bolt"></i>
+                <div>
+                    <div style="font-weight: bold;">Points</div>
+                    <div id="points" style="color: #878787;">0</div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="card">
+                <h2>Recent Activities</h2>
+                <p>Your latest updates and interactions will appear here.</p>
             </div>
         </div>
     </div>
 
-    <footer>
-        &copy; 2024 Profile Page
-    </footer>
+    <script>
+        // Retrieve user from localStorage
+        const user = JSON.parse(localStorage.getItem("user"));
+
+        if (user && user.username) {
+            document.getElementById("username").textContent = user.username;
+        } 
+        document.getElementById("logoutButton").addEventListener("click", () => {
+            localStorage.removeItem("user");
+            alert("Logged out successfully!");
+            window.location.href = "login.html";
+        });
+
+        // Logout functionality
+        function logout() {
+            localStorage.removeItem("user");
+            window.location.href = "login.html";  // Redirect to login page
+        }
+    </script>
+
 </body>
 </html>
