@@ -1,0 +1,174 @@
+CREATE DATABASE web;
+use web;
+
+CREATE TABLE user (
+  id INT auto_increment PRIMARY KEY,
+  username VARCHAR(100) NOT NULL,
+  email VARCHAR(100) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL
+);
+select*from products;
+select*from products;
+SELECT * FROM categories;
+SELECT * FROM user;
+DELETE FROM user;
+
+
+
+
+
+
+CREATE TABLE categories (
+    category_id INT AUTO_INCREMENT PRIMARY KEY,
+    category_name VARCHAR(255) NOT NULL
+);
+
+-- Insert categories into the 'categories' table
+INSERT INTO categories (category_name) VALUES
+('Fruits'),
+('Vegetables'),
+('Dairy Products');
+
+
+CREATE TABLE products (
+    product_id INT AUTO_INCREMENT PRIMARY KEY,
+    product_name VARCHAR(255) NOT NULL,
+    category_id INT,
+    price DECIMAL(10, 2) NOT NULL,
+    image_path VARCHAR(255),
+    FOREIGN KEY (category_id) REFERENCES categories(category_id)
+);
+
+CREATE TABLE orders (
+    order_id VARCHAR(50) PRIMARY KEY,
+    order_date DATE NOT NULL,
+    delivery_date DATE NOT NULL,
+    total_payment DECIMAL(10, 2) NOT NULL,
+    items TEXT NOT NULL -- Store items as a JSON string
+);
+SELECT * FROM orders;
+
+drop table orders;
+select*from orders;
+
+DESCRIBE orders;
+DESCRIBE orders;
+
+-- Insert products into the 'products' table (Sample entries)
+INSERT INTO products (product_name, category_id, price, image_path) VALUES
+('Papaya', 1, 6.00, 'assist/fruits/Screenshot 2024-07-10 162050.png'),
+('Avocado', 1, 10.00, 'assist/fruits/Screenshot 2024-07-15 094825.png'),
+('Banana', 1, 9.00, 'assist/fruits/Screenshot 2024-07-15 095810.png'),
+('Orange', 1, 8.00, 'assist/fruits/Screenshot 2024-07-15 095810.png'),
+('Grape', 1, 9.00, 'assist/fruits/Screenshot 2024-07-15 101053.png'),
+('Onion', 2, 2.45, 'assist/vegitable.assist/Screenshot 2024-07-02 143921.png'),
+('Tomato', 2, 4.35, 'assist/vegitable.assist/Screenshot 2024-07-02 144855.png'),
+('Beetroot', 2, 3.00, 'assist/vegitable.assist/Screenshot 2024-07-02 175213.png'),
+('Sweet Potato', 2, 8.00, 'assist/vegitable.assist/Screenshot 2024-07-10 160255.png'),
+('Carrot', 2, 6.00, 'assist/vegitable.assist/Screenshot 2024-07-10 155838.png'),
+('Milk', 3, 4.00, 'assist/dairyProduct/Screenshot 2024-07-28 085459.png'),
+('Curd', 3, 3.00, 'assist/dairyProduct/Screenshot 2024-07-28 090140.png'),
+('Paneer', 3, 9.00, 'assist/dairyProduct/Screenshot 2024-07-28 085705.png'),
+('Bread', 3, 8.00, 'assist/dairyProduct/Screenshot 2024-07-28 090049.png'),
+('Badam Milk', 3, 9.00, 'assist/dairyProduct/Screenshot 2024-07-28 090625.png');
+
+
+SELECT p.product_name, p.price, p.image_path
+FROM products p
+JOIN categories c ON p.category_id = c.category_id
+WHERE c.category_name = 'Fruits';
+
+
+SELECT p.product_name, c.category_name, p.price, p.image_path
+FROM products p
+JOIN categories c ON p.category_id = c.category_id;
+
+CREATE TABLE cart (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    price DECIMAL(10, 2) NOT NULL,
+    quantity INT NOT NULL
+);
+
+select*from user;
+INSERT INTO cart (name, price, quantity) VALUES ('Apple', 1.99, 3);
+
+--  Retrieve all categories
+SELECT * FROM categories;
+
+INSERT INTO cart (id,name, price, quantity) 
+VALUES ('Banana', 9.00, 2);
+
+
+
+-- Retrieve all products with their categories
+SELECT p.product_name, c.category_name, p.price, p.image_path
+FROM products p
+LEFT JOIN categories c ON p.category_id = c.category_id;
+
+-- Search for a product by name
+SELECT * FROM products
+WHERE product_name LIKE '%Banana%';
+
+--  Retrieve all products in a specific price range
+SELECT product_name, price 
+FROM products 
+WHERE price BETWEEN 5 AND 10;
+
+-- Update a product's price
+
+UPDATE products
+SET price = 12.00
+WHERE product_name = 'Banana';
+
+-- Delete a product from the catalog
+
+DELETE FROM products
+WHERE product_name = 'Avocado';
+
+-- View the cart's total value
+SELECT SUM(price * quantity) AS total_cart_value
+FROM cart;
+
+-- View items in the cart
+SELECT * FROM cart;
+
+-- Update cart item quantity
+UPDATE cart
+SET quantity = 3
+WHERE name = 'Banana';
+
+-- Remove an item from the cart
+DELETE FROM cart
+WHERE name = 'Milk';
+
+-- Join cart with products for detailed view
+SELECT c.category_name, COUNT(p.product_id) AS product_count
+FROM categories c
+LEFT JOIN products p ON c.category_id = p.category_id
+GROUP BY c.category_name;
+
+-- List distinct product categories available in the product table
+SELECT DISTINCT c.category_name
+FROM categories c
+JOIN products p ON c.category_id = p.category_id;
+
+--  Clear the cart
+DELETE FROM cart;
+
+-- Delete a user
+DELETE FROM user
+WHERE username = 'john_doe';
+
+-- DELETE FROM user
+DELETE FROM user WHERE username = 'john_doe';
+
+-- 
+CREATE TABLE cart (
+  cart_id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  price DECIMAL(10, 2) NOT NULL,
+  quantity INT NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES user(id)
+);
