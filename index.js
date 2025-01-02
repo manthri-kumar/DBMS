@@ -14,14 +14,7 @@ const port = 5001;
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
-// Serve all static files from the "public" directory
 app.use(express.static(path.join(__dirname, "public")));
-
-// Root route to serve login.html
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "login.html"));
-});
 
 // Database connection
 const connection = mysql.createConnection({
@@ -41,6 +34,11 @@ connection.connect((err) => {
 
 // JWT Secret
 const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret";
+
+// Root route
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "login.html"));
+});
 
 // Signup route
 app.post("/signup", async (req, res) => {
@@ -82,7 +80,7 @@ app.post("/signup", async (req, res) => {
   });
 });
 
-// Login route with JWT token
+// Login route
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
 
@@ -109,7 +107,7 @@ app.post("/login", (req, res) => {
           const token = jwt.sign(
             { userId: user.id, username: user.username },
             JWT_SECRET,
-            { expiresIn: "1h" } // Token expires in 1 hour
+            { expiresIn: "1h" }
           );
           res.status(200).json({
             message: "Login successful!",
@@ -128,7 +126,7 @@ app.post("/login", (req, res) => {
 
 // Middleware to authenticate JWT token
 const authenticateJWT = (req, res, next) => {
-  const token = req.headers["authorization"]?.split(" ")[1]; // Get token from "Authorization: Bearer token"
+  const token = req.headers["authorization"]?.split(" ")[1];
 
   if (!token) {
     return res.status(403).json({ error: true, message: "Access denied" });
@@ -143,79 +141,58 @@ const authenticateJWT = (req, res, next) => {
     next();
   });
 };
-
-// Cart HTML Route (User must be logged in to view cart)
-app.get("/cart", authenticateJWT, (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "cart.html"));
+app.get("/order.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "order.html"));
 });
 
-// Add to Cart Route (User must be logged in)
-app.post("/cart", authenticateJWT, (req, res) => {
-  const { name, price, quantity } = req.body;
-  const userId = req.user.userId;
+app.post("/place-order", authenticateJWT, (req, res) => {
+  const { cart, totalAmount } = req.body;
 
-  if (!name || !price || !quantity) {
-    return res.status(400).json({ error: true, message: "Please provide product name, price, and quantity" });
+  console.log("Cart received:", cart);
+  console.log("Total Amount received:", totalAmount);
+
+  if (!cart || cart.length === 0 || !totalAmount) {
+      return res.status(400).json({ error: true, message: "Invalid order data" });
   }
 
-  const query = "INSERT INTO cart (user_id, name, price, quantity) VALUES (?, ?, ?, ?)";
-  connection.query(query, [userId, name, price, quantity], (err) => {
-    if (err) {
-      console.error("Error adding to cart:", err);
-      return res.status(500).json({ error: true, message: "Failed to add item to cart" });
-    }
-    res.json({ message: "Item added to cart successfully!" });
+  const orderId = `ORD-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+  const currentDate = new Date().toISOString().split("T")[0];
+  const deliveryDate = new Date();
+  deliveryDate.setDate(deliveryDate.getDate() + 7);
+  const deliveryDateFormatted = deliveryDate.toISOString().split("T")[0];
+
+  const itemsJSON = JSON.stringify(cart);
+
+  console.log("Inserting into orders table:", {
+      orderId,
+      currentDate,
+      deliveryDateFormatted,
+      totalAmount,
+      itemsJSON,
   });
+
+  const orderQuery =
+    "INSERT INTO orders (order_id, order_date, delivery_date, total_payment, items) VALUES (?, ?, ?, ?, ?)";
+  connection.query(
+      orderQuery,
+      [orderId, currentDate, deliveryDateFormatted, totalAmount, itemsJSON],
+      (err) => {
+          if (err) {
+              console.error("Error saving order:", err);
+              return res.status(500).json({ error: true, message: "Failed to save order" });
+          }
+
+          console.log("Order successfully inserted.");
+          res.status(200).json({
+              message: "Order placed successfully!",
+              orderId,
+              orderDate: currentDate,
+              deliveryDate: deliveryDateFormatted,
+          });
+      }
+  );
 });
 
-// Fetch Cart Items Route (User must be logged in)
-app.get("/getcartItems", authenticateJWT, (req, res) => {
-  const userId = req.user.userId;
-
-  const query = "SELECT * FROM cart WHERE user_id = ?";
-  connection.query(query, [userId], (err, rows) => {
-    if (err) {
-      console.error("Error fetching cart items:", err);
-      return res.status(500).json({ error: true, message: "Failed to fetch cart items" });
-    }
-    res.json(rows);
-  });
-});
-
-// Update Cart Item Quantity (User must be logged in)
-app.put("/cart/:id", authenticateJWT, (req, res) => {
-  const { id } = req.params;
-  const { quantity } = req.body;
-  const userId = req.user.userId;
-
-  if (!quantity) {
-    return res.status(400).json({ error: true, message: "Please provide a quantity" });
-  }
-
-  const query = "UPDATE cart SET quantity = ? WHERE cart_id = ? AND user_id = ?";
-  connection.query(query, [quantity, id, userId], (err) => {
-    if (err) {
-      console.error("Error updating cart item:", err);
-      return res.status(500).json({ error: true, message: "Failed to update cart item" });
-    }
-    res.json({ message: "Cart item updated successfully!" });
-  });
-});
-
-// Remove Item from Cart (User must be logged in)
-app.delete("/cart/:id", authenticateJWT, (req, res) => {
-  const { id } = req.params;
-  const userId = req.user.userId;
-
-  const query = "DELETE FROM cart WHERE cart_id = ? AND user_id = ?";
-  connection.query(query, [id, userId], (err) => {
-    if (err) {
-      console.error("Error deleting cart item:", err);
-      return res.status(500).json({ error: true, message: "Failed to delete cart item" });
-    }
-    res.json({ message: "Cart item deleted successfully!" });
-  });
-});
 
 // Start the server
 app.listen(port, () => {
