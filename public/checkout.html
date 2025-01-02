@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+    }
+
+    .checkout-container {
+      margin-top: 20px;
+    }
+
+    .checkout-item {
+      margin-bottom: 10px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .checkout-total {
+      font-weight: bold;
+      margin-top: 20px;
+    }
+
+    .place-order {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Checkout</h1>
+  <div class="checkout-container">
+    <div class="checkout-items"></div>
+    <div class="checkout-total"></div>
+    <button class="place-order">Place Order</button>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const cart = JSON.parse(localStorage.getItem("cart")) || [];
+      const totalAmount = localStorage.getItem("totalAmount") || "0.00";
+      const checkoutItemsContainer = document.querySelector(".checkout-items");
+      const checkoutTotal = document.querySelector(".checkout-total");
+
+      // Display cart items
+      cart.forEach((item) => {
+        const div = document.createElement("div");
+        div.className = "checkout-item";
+        div.textContent = `${item.name} - $${item.price} x ${item.quantity}`;
+        checkoutItemsContainer.appendChild(div);
+      });
+
+      checkoutTotal.textContent = `Total: $${totalAmount}`;
+
+      document.querySelector(".place-order").addEventListener("click", () => {
+        // Store order details in localStorage for the order page
+        localStorage.setItem("orderDetails", JSON.stringify({ cart, totalAmount }));
+
+        // Redirect to the order page
+        window.location.href = "order.html";
+      });
+    });
+  </script>
+</body>
+</html>
