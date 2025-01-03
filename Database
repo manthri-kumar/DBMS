@@ -7,7 +7,15 @@ CREATE TABLE user (
   email VARCHAR(100) NOT NULL UNIQUE,
   password VARCHAR(255) NOT NULL
 );
-
+CREATE TABLE order_items (
+  order_item_id INT AUTO_INCREMENT PRIMARY KEY,
+  order_id VARCHAR(50) NOT NULL,
+  product_id INT NOT NULL,
+  quantity INT NOT NULL,
+  price DECIMAL(10, 2) NOT NULL,
+  FOREIGN KEY (order_id) REFERENCES orders(order_id),
+  FOREIGN KEY (product_id) REFERENCES products(product_id)
+);
 CREATE TABLE categories (
     category_id INT AUTO_INCREMENT PRIMARY KEY,
     category_name VARCHAR(255) NOT NULL
@@ -175,15 +183,7 @@ WHERE username = 'Ram';
 -- DELETE FROM user
 DELETE FROM user WHERE username = 'Ram';
 
-SELECT * FROM user;
-select*from products;
-select*from orders;
-SELECT * FROM categories;
-select*from seller_products;
-describe orders;
-describe user;
-describe categories;
-describe seller_products;
+
 
 -- Aggregate Functions
 SELECT c.category_name, COUNT(p.product_id) AS product_count, AVG(p.price) AS avg_price
@@ -254,3 +254,17 @@ SELECT product_name, price FROM products WHERE price > ANY (SELECT price FROM pr
 
 -- ALL
 SELECT product_name, price FROM products WHERE price > ALL (SELECT price FROM products WHERE category_id = 3);
+
+
+SELECT * FROM user;
+select*from products;
+select*from orders;
+SET SQL_SAFE_UPDATES = 0;
+
+delete from orders;
+SELECT * FROM categories;
+select*from seller_products;
+describe orders;
+describe user;
+describe categories;
+describe seller_products;
